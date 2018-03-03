@@ -378,6 +378,13 @@
           );
         }
       };
+      if (
+        location.protocol === 'http:' &&
+        location.host === 'webreflection.github.io' &&
+        location.search !== '?nrd'
+      ) {
+        location.protocol = 'https:';
+      }
     </script>
   </head>
   <body>
