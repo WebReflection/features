@@ -1,0 +1,17 @@
+{
+  "name": "features",
+  "private": true,
+  "description": "Browser Features Test",
+  "scripts": {
+    "build": "node build",
+    "start": "npm run watch & http-server",
+    "watch": "watch 'npm run build' ./tests"
+  },
+  "author": "Andrea Giammarchi",
+  "license": "ISC",
+  "devDependencies": {
+    "asbundle": "^2.4.0",
+    "http-server": "^0.11.1",
+    "watch": "^1.0.2"
+  }
+}

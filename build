@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var asbundle = require('asbundle');
+var CWD = process.cwd();
+var tests = [];
+fs.readdir('./tests', function (err, files) {
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    if (file.charAt(0) !== '.') {
+      // if soemthing is wrong just throw
+      if (require('./tests/' + file)) {
+        tests.push(
+          asbundle(CWD + '/tests/' + file + '/index.js').replace(/;\s*$/, '')
+        );
+      }
+    }
+  }
+  fs.readFile('./template.html', function (err, content) {
+    fs.writeFile(
+      './index.html',
+      content.toString()
+      .replace(
+        'getResults([])',
+        'getResults([\n' +
+          tests.join(',\n')
+          .replace(
+            /^/gm,
+            '          '
+          )
+          .replace(
+            /return main\.__esModule \? main.default : main;/g,
+            'return main;'
+          ) +
+        '\n        ])'
+      ),
+      function (err) {
+        if (err) throw err;
+        else console.log('OK');
+      }
+    );
+  });
+});

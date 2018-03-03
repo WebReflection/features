@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Browser Features Test</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <style>
+      body {
+        font-family: sans-serif;
+        --variable: 100;
+      }
+      h1 {
+        font-size: 1.3em;
+        font-weight: normal;
+      }
+      h2 {
+        font-size: .8em;
+        font-weight: normal;
+      }
+      legend {
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+      label {
+        display: block;
+      }
+      a {
+        text-decoration: underline dotted;
+      }
+      span {
+        font-size: small;
+      }
+      h1, h2, form > input {
+        margin: 16px;
+      }
+      h2 {
+        margin-top: -16px;
+      }
+      body > pre, body > strong {
+        margin: 8px;
+      }
+    </style>
+    <script>
+      this.onload = function () {
+        getResults([]);
+        function getResults(tests) {
+          for (var
+            results = [],
+            info = {total: 0, passed: 0},
+            total = 0,
+            i = 0; i < tests.length; i++
+          ) {
+            var group = tests[i];
+            var fieldset = '<fieldset><legend>' + group.name + '</legend>';
+            info.total += group.tests.length;
+            for (var j = 0; j < group.tests.length; j++) {
+              ++total;
+              (function (test, caveats, once) {
+                test.test(
+                  function (result) {
+                    if (once) once = false;
+                    else throw new Error(test.name + ' called done(result) already');
+                    setTimeout(
+                      function () {
+                        test.caveats = caveats;
+                        test.result = result;
+                        info.passed += result ? 1 : 0;
+                        if (!--total) showResults(tests, info);
+                      },
+                      0
+                    );
+                  },
+                  caveats
+                );
+              }(group.tests[j], [], true));
+            }
+          }
+        }
+        function showResults(tests, info) {
+          for (var output = [], i = 0; i < tests.length; i++) {
+            var group = tests[i];
+            var fieldset = '<fieldset><legend>' + group.name + '</legend>';
+            for (var j = 0; j < group.tests.length; j++) {
+              var test = group.tests[j];
+              fieldset += '<label class="' + [].concat(
+                !test.result ? 'failed' : [],
+                test.caveats.length ? 'caveats' : []
+              ).join(' ') + '">' +
+                '<input onclick="event.preventDefault()" type="checkbox" name="' +
+                  escape(test.name) +
+                '"' +
+                (test.result ? ' checked="checked"' : '') +
+                '"/> ' +
+                (test.url ? ('<a target="_blank" href="' + test.url + '">' + test.name + '</a>') : test.name) +
+                (test.caveats.length ? (' <span>( ' + [].concat(test.caveats).join('; ') + ' )</span> ') : '') +
+              '</label>';
+            }
+            fieldset += '</fieldset>';
+            output[i] = fieldset;
+          }
+          document.body.appendChild(
+            document.createElement('main')
+          ).innerHTML = ''.concat(
+            '<h2>passed <strong>',
+              info.passed,
+            '</strong> out of <strong>',
+              info.total,
+            '</strong> ', getScoremoji(info.passed / info.total), '</h2>',
+            '<form method="get">',
+              output.join('\n'),
+            '<input type="submit"/></form>'
+          );
+          if (location.search) onSubmitData();
+        }
+        function getScoremoji(score) {
+          switch (true) {
+            case .9 < score: return '🎉';
+            case .8 < score: return '🍻';
+            case .7 < score: return '🍰';
+            case .6 < score: return '👍';
+            case .5 < score: return '🤨';
+            case .4 < score: return '😞';
+            case .3 < score: return '😟';
+            case .2 < score: return '😠';
+            case .1 < score: return '😡';
+            default: return '🤬';
+          }
+        }
+        function onSubmitData() {
+          document.body.appendChild(
+            document.createElement('strong')
+          ).innerHTML = 'Functionality not yet implemented.';
+          for (var
+            info = {
+              userAgent: navigator.userAgent,
+              when: new Date,
+              features: []
+            },
+            list = decodeURI(location.search.slice(1)).split('&'),
+            i = 0; i < list.length; i++
+          ) {
+            var line = list[i].split('=');
+            info.features.push(unescape(line[0]));
+          }
+          info.features.sort();
+          document.body.appendChild(
+            document.createElement('pre')
+          ).appendChild(
+            document.createTextNode(JSON.stringify(info, null, '  '))
+          );
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Browser Features</h1>
+  </body>
+</html>

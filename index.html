@@ -1,0 +1,386 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Browser Features Test</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <style>
+      body {
+        font-family: sans-serif;
+        --variable: 100;
+      }
+      h1 {
+        font-size: 1.3em;
+        font-weight: normal;
+      }
+      h2 {
+        font-size: .8em;
+        font-weight: normal;
+      }
+      legend {
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+      label {
+        display: block;
+      }
+      a {
+        text-decoration: underline dotted;
+      }
+      span {
+        font-size: small;
+      }
+      h1, h2, form > input {
+        margin: 16px;
+      }
+      h2 {
+        margin-top: -16px;
+      }
+      body > pre, body > strong {
+        margin: 8px;
+      }
+    </style>
+    <script>
+      this.onload = function () {
+        getResults([
+          (function (cache, modules) {
+            function require(i) { return cache[i] || get(i); }
+            function get(i) {
+              var exports = {}, module = {exports: exports};
+              modules[i].call(exports, window, require, module, exports);
+              return (cache[i] = module.exports);
+            }
+            var main = require(0);
+            return main;
+          }([],[function (global, require, module, exports) {
+          // index.js
+          module.exports = {
+            name: 'CSS',
+            tests: [
+              require(1),
+              require(2),
+              require(3)
+            ]
+          };
+          },function (global, require, module, exports) {
+          // flexbox.js
+          module.exports = {
+            name: 'Flexbox',
+            test: function (done, caveats) {
+              try {
+                if ('flex-grow' in document.body.style) done(true);
+                else if ('-ms-flex-positive' in document.body.style) done(!!caveats.push('with -ms prefix'));
+                else if ('-webkit-flex-grow' in document.body.style) done(!!caveats.push('with -webkit prefix'));
+                else if ('-moz-flex-grow' in document.body.style) done(!!caveats.push('with -moz prefix'));
+                else throw new Error;
+              } catch (o_O) {
+                done(false);
+              }
+            }
+          };
+          },function (global, require, module, exports) {
+          // grid.js
+          module.exports = {
+            name: 'Grid',
+            test: function (done, caveats) {
+              try {
+                done('grid-template-areas' in document.body.style);
+              } catch (o_O) {
+                done(false);
+              }
+            }
+          };
+          },function (global, require, module, exports) {
+          // variables.js
+          module.exports = {
+            name: 'Variables',
+            test: function (done, caveats) {
+              try {
+                var readable = getComputedStyle(document.body, null).getPropertyValue('--variable') == 100;
+                done(readable);
+                if (!readable) return;
+                try {
+                  document.body.style.setProperty('--variable', 200);
+                  if (getComputedStyle(document.body, null).getPropertyValue('--variable') != 200) {
+                    caveats.push('non writable');
+                  }
+                } catch(o_O) {
+                  caveats.push('no .setProperty(...)');
+                }
+              } catch (o_O) {
+                done(false);
+              }
+            }
+          };
+          }])),
+          (function (cache, modules) {
+            function require(i) { return cache[i] || get(i); }
+            function get(i) {
+              var exports = {}, module = {exports: exports};
+              modules[i].call(exports, window, require, module, exports);
+              return (cache[i] = module.exports);
+            }
+            var main = require(0);
+            return main;
+          }([],[function (global, require, module, exports) {
+          // index.js
+          module.exports = {
+            name: 'Database / Storage',
+            tests: [
+              require(1),
+              require(2)
+            ]
+          };
+          },function (global, require, module, exports) {
+          // indexeddb.js
+          module.exports = {
+            name: 'IndexedDB',
+            test: function (done, caveats) {
+              done(typeof indexedDB === 'object');
+            }
+          };
+          },function (global, require, module, exports) {
+          // web-sql.js
+          module.exports = {
+            name: 'Web SQL',
+            test: function (done, caveats) {
+              done(typeof openDatabase === 'function');
+            }
+          };
+          }])),
+          (function (cache, modules) {
+            function require(i) { return cache[i] || get(i); }
+            function get(i) {
+              var exports = {}, module = {exports: exports};
+              modules[i].call(exports, window, require, module, exports);
+              return (cache[i] = module.exports);
+            }
+            var main = require(0);
+            return main;
+          }([],[function (global, require, module, exports) {
+          // index.js
+          module.exports = {
+            name: 'JS',
+            tests: [
+              require(1),
+              require(2),
+              require(3)
+            ]
+          };
+          },function (global, require, module, exports) {
+          // const-let.js
+          module.exports = {
+            name: 'const / let',
+            test: function (done, caveats) {
+              try {
+                Function('done', 'let a = 1; const b = 2; done(a === 1 && b === 2)')(done);
+              } catch(o_O) {
+                done(false);
+              }
+            }
+          };
+          },function (global, require, module, exports) {
+          // classes.js
+          module.exports = {
+            name: 'Classes',
+            test: function (done, caveats) {
+              try {
+                eval('class List extends Array {}\ndone(new List instanceof Array)');
+              } catch(o_O) {
+                done(false);
+              }
+            }
+          };
+          },function (global, require, module, exports) {
+          // literals.js
+          module.exports = {
+            name: 'Template Literals',
+            test: function (done, caveats) {
+              try {
+                function tag(tpl) { return tpl; };
+                var same = eval('tag`1${2}3` === tag`1${0}3`');
+                if (!same) caveats.push('not same template array');
+                done(true);
+              } catch(o_O) {
+                done(false);
+              }
+            }
+          };
+          }])),
+          (function (cache, modules) {
+            function require(i) { return cache[i] || get(i); }
+            function get(i) {
+              var exports = {}, module = {exports: exports};
+              modules[i].call(exports, window, require, module, exports);
+              return (cache[i] = module.exports);
+            }
+            var main = require(0);
+            return main;
+          }([],[function (global, require, module, exports) {
+          // index.js
+          module.exports = {
+            name: 'Web Components',
+            tests: [
+              require(1),
+              require(2),
+              require(3)
+            ]
+          };
+          },function (global, require, module, exports) {
+          // custom-elements-v1.js
+          module.exports = {
+            name: 'Custom Elements V1',
+            test: function (done, caveats) {
+              var CE = typeof customElements === 'object';
+              done(CE);
+              if (CE) {
+                try {
+                  customElements.whenDefined('shena-nigans').then(console.log);
+                } catch(o_O) {
+                  caveats.push('no .whenDefined(...)');
+                }
+              }
+            }
+          };
+          },function (global, require, module, exports) {
+          // shadow-dom.js
+          module.exports = {
+            name: 'Shadow DOM',
+            test: function (done, caveats) {
+              try {
+                done(!!document.body.attachShadow);
+              } catch(o_O) {
+                caveats.push('no document', 'no body');
+                done(false);
+              }
+            }
+          };
+          },function (global, require, module, exports) {
+          // template.js
+          module.exports = {
+            name: 'HTML Template Elements',
+            test: function (done, caveats) {
+              try {
+                var tpl = document.createElement('template');
+                tpl.innerHTML = '<td></td>';
+                done(/^td$/i.test(tpl.content.firstChild.nodeName));
+              } catch(o_O) {
+                done(false);
+              }
+            }
+          };
+          }]))
+        ]);
+        function getResults(tests) {
+          for (var
+            results = [],
+            info = {total: 0, passed: 0},
+            total = 0,
+            i = 0; i < tests.length; i++
+          ) {
+            var group = tests[i];
+            var fieldset = '<fieldset><legend>' + group.name + '</legend>';
+            info.total += group.tests.length;
+            for (var j = 0; j < group.tests.length; j++) {
+              ++total;
+              (function (test, caveats, once) {
+                test.test(
+                  function (result) {
+                    if (once) once = false;
+                    else throw new Error(test.name + ' called done(result) already');
+                    setTimeout(
+                      function () {
+                        test.caveats = caveats;
+                        test.result = result;
+                        info.passed += result ? 1 : 0;
+                        if (!--total) showResults(tests, info);
+                      },
+                      0
+                    );
+                  },
+                  caveats
+                );
+              }(group.tests[j], [], true));
+            }
+          }
+        }
+        function showResults(tests, info) {
+          for (var output = [], i = 0; i < tests.length; i++) {
+            var group = tests[i];
+            var fieldset = '<fieldset><legend>' + group.name + '</legend>';
+            for (var j = 0; j < group.tests.length; j++) {
+              var test = group.tests[j];
+              fieldset += '<label class="' + [].concat(
+                !test.result ? 'failed' : [],
+                test.caveats.length ? 'caveats' : []
+              ).join(' ') + '">' +
+                '<input onclick="event.preventDefault()" type="checkbox" name="' +
+                  escape(test.name) +
+                '"' +
+                (test.result ? ' checked="checked"' : '') +
+                '"/> ' +
+                (test.url ? ('<a target="_blank" href="' + test.url + '">' + test.name + '</a>') : test.name) +
+                (test.caveats.length ? (' <span>( ' + [].concat(test.caveats).join('; ') + ' )</span> ') : '') +
+              '</label>';
+            }
+            fieldset += '</fieldset>';
+            output[i] = fieldset;
+          }
+          document.body.appendChild(
+            document.createElement('main')
+          ).innerHTML = ''.concat(
+            '<h2>passed <strong>',
+              info.passed,
+            '</strong> out of <strong>',
+              info.total,
+            '</strong> ', getScoremoji(info.passed / info.total), '</h2>',
+            '<form method="get">',
+              output.join('\n'),
+            '<input type="submit"/></form>'
+          );
+          if (location.search) onSubmitData();
+        }
+        function getScoremoji(score) {
+          switch (true) {
+            case .9 < score: return '🎉';
+            case .8 < score: return '🍻';
+            case .7 < score: return '🍰';
+            case .6 < score: return '👍';
+            case .5 < score: return '🤨';
+            case .4 < score: return '😞';
+            case .3 < score: return '😟';
+            case .2 < score: return '😠';
+            case .1 < score: return '😡';
+            default: return '🤬';
+          }
+        }
+        function onSubmitData() {
+          document.body.appendChild(
+            document.createElement('strong')
+          ).innerHTML = 'Functionality not yet implemented.';
+          for (var
+            info = {
+              userAgent: navigator.userAgent,
+              when: new Date,
+              features: []
+            },
+            list = decodeURI(location.search.slice(1)).split('&'),
+            i = 0; i < list.length; i++
+          ) {
+            var line = list[i].split('=');
+            info.features.push(unescape(line[0]));
+          }
+          info.features.sort();
+          document.body.appendChild(
+            document.createElement('pre')
+          ).appendChild(
+            document.createTextNode(JSON.stringify(info, null, '  '))
+          );
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Browser Features</h1>
+  </body>
+</html>
