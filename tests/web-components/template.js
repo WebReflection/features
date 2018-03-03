@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'HTML Template Elements',
+  name: 'Template Element',
   test: function (done, caveats) {
     try {
       var tpl = document.createElement('template');

@@ -164,43 +164,329 @@
             tests: [
               require(1),
               require(2),
+              require(3),
+              require(4)
+            ]
+          };
+          },function (global, require, module, exports) {
+          // es2015.js
+          "use strict";
+          
+          var tests = [
+            function objects(caveats) {
+              try {
+                if (!eval('({Y(){return true},get ["OK"](){return this.Y()}}).OK===true')) {
+                  throw new Error('caveat');
+                }
+              } catch(o_O) {
+                if (o_O.message === 'caveat')
+                  caveats.push('no object literals');
+                else
+                  throw o_O;
+              }
+            },
+            function forOf(caveats) {
+              eval('for (const v of [1,2,3]) {}');
+            },
+            function templateLiterals(caveats) {
+              function tag(tpl) { return tpl; };
+              var same = eval('tag`1${2}3` === tag`1${0}3`');
+              if (!same) caveats.push('not same template array');
+            },
+            function destructuring(caveats) {
+              eval('const [a, b] = [1, 2]; if(a !== 1 || b !== 2) throw new Error;');
+            },
+            function classes(caveats) {
+              eval([
+                'class List extends Array {}',
+                'if(false === new List instanceof Array) throw new Error'
+              ].join('\n'));
+            },
+            function spread(caveats) {
+              if (eval('"".concat(...["a", "b", "c"])') !== 'abc')
+               throw new Error;
+            },
+            function symbols(caveats) {
+              if (!(Symbol.iterator in String.prototype)) {
+                caveats.push('no Symbol.iterator');
+              }
+            },
+            function strings(caveats) {
+              if (!(
+                ''.startsWith &&
+                ''.endsWith &&
+                ''.repeat &&
+                ''.codePointAt &&
+                ''.includes &&
+                ''.normalize
+              )) {
+                caveats.push('not all String');
+              }
+            },
+            function arrays(caveats) {
+              if (!(
+                Array.from &&
+                [].copyWithin &&
+                [].find &&
+                [].findIndex &&
+                [].fill &&
+                [].keys &&
+                [].entries
+              )) {
+                throw new Error;
+              }
+              if (![].values) caveats.push('no [].values()');
+            },
+            function numbers(caveats) {
+              if (!(
+                Number.isFinite &&
+                Number.isInteger &&
+                Number.isSafeInteger &&
+                Number.isNaN &&
+                Number.parseFloat &&
+                Number.parseInt &&
+                Number.EPSILON &&
+                Number.MIN_SAFE_INTEGER &&
+                Number.MAX_SAFE_INTEGER
+              )) {
+                caveats.push('not all Number');
+              }
+            },
+            function math(caveats) {
+              if (!(
+                Math.clz32 &&
+                Math.imul &&
+                Math.sign &&
+                Math.log10 &&
+                Math.log2 &&
+                Math.log1p &&
+                Math.expm1 &&
+                Math.cosh &&
+                Math.sinh &&
+                Math.tanh &&
+                Math.acosh &&
+                Math.asinh &&
+                Math.atanh &&
+                Math.trunc &&
+                Math.fround &&
+                Math.cbrt &&
+                Math.hypot
+              )) {
+                caveats.push('not all Math');
+              }
+            },
+            function misc() {
+              if (!(
+                WeakMap &&
+                WeakSet &&
+                Map &&
+                Set &&
+                Promise
+              )) {
+                throw new Error;
+              }
+            },
+            function proxy(caveats) {
+              var object = {};
+              if (
+                new Proxy(object, {get: function (target, key) {
+                  return target === object && key === 'test' && 123;
+                }}).test !== 123
+              ) {
+                throw new Error;
+              }
+            },
+            function arrow(caveats) {
+              if (!eval(
+                '(function(){let a=arguments;return(()=>arguments==a&&this==Math)()}.call(Math))'
+              )) throw new Error;
+            },
+            function tailCall(caveats) {
+              function f(n) {
+                return n <= 0 ? "OK" : f(n - 1);
+              }
+              try {
+                if (f(1e6) !== "OK") throw new Error;
+              } catch(o_0) {
+                caveats.push('no tail calls');
+              }
+            },
+            function defaultParameters(caveats) {
+              try {
+                if (!eval('(function(a="a"){return a}() === "a")')) {
+                  throw new Error('caveat');
+                }
+              } catch(o_O) {
+                if (o_O.message === 'caveat')
+                  caveats.push('no default parameters');
+                else
+                  throw o_O;
+              }
+            },
+            function restParameters(caveats) {
+              try {
+                if (!eval('(function(...a){return a.join("")}(1,2,3) === "123")')) {
+                  throw new Error('caveat');
+                }
+              } catch(o_O) {
+                if (o_O.message === 'caveat')
+                  caveats.push('no rest parameters');
+                else
+                  throw o_O;
+              }
+            }
+          ];
+          
+          module.exports = {
+            name: 'ES2015',
+            url: 'http://kangax.github.io/compat-table/es6/',
+            test: function (done, caveats) {
+              for (var i = 0; i < tests.length; i++) {
+                try {
+                  tests[i](caveats);
+                } catch(o_O) {
+                  return done(false);
+                }
+              }
+              done(true);
+            }
+          };
+          },function (global, require, module, exports) {
+          // es2016.js
+          "use strict";
+          
+          var tests = [
+            function exponentialOperator(caveats) {
+              if(!eval('3**2===9')) throw new Error;
+            },
+            function arrayIncludes(caveats) {
+              if (![].includes) throw new Error;
+            }
+          ];
+          
+          module.exports = {
+            name: 'ES2016',
+            url: 'http://kangax.github.io/compat-table/es2016plus/',
+            test: function (done, caveats) {
+              for (var i = 0; i < tests.length; i++) {
+                try {
+                  tests[i](caveats);
+                } catch(o_O) {
+                  return done(false);
+                }
+              }
+              done(true);
+            }
+          };
+          },function (global, require, module, exports) {
+          // es2017.js
+          "use strict";
+          
+          var tests = [
+            function objectStatic(caveats) {
+              if (!(
+                Object.values &&
+                Object.entries &&
+                Object.getOwnPropertyDescriptors
+              )) {
+                throw new Error;
+              }
+            },
+            function stringPadding(caveats) {
+              if (!(
+                ''.padStart &&
+                ''.padEnd
+              )) {
+                throw new Error;
+              }
+            },
+            function asynchronous() {
+              eval('(async function () { return await Promise.resolve(1); })()');
+            }
+          ];
+          
+          module.exports = {
+            name: 'ES2017',
+            url: 'http://kangax.github.io/compat-table/es2016plus/',
+            test: function (done, caveats) {
+              for (var i = 0; i < tests.length; i++) {
+                try {
+                  tests[i](caveats);
+                } catch(o_O) {
+                  return done(false);
+                }
+              }
+              done(true);
+            }
+          };
+          },function (global, require, module, exports) {
+          // esm.js
+          module.exports = {
+            name: 'Modules',
+            test: function (done, caveats) {
+              done(typeof ESM === 'boolean' && ESM);
+            }
+          };
+          }])),
+          (function (cache, modules) {
+            function require(i) { return cache[i] || get(i); }
+            function get(i) {
+              var exports = {}, module = {exports: exports};
+              modules[i].call(exports, window, require, module, exports);
+              return (cache[i] = module.exports);
+            }
+            var main = require(0);
+            return main;
+          }([],[function (global, require, module, exports) {
+          // index.js
+          module.exports = {
+            name: 'PWA',
+            tests: [
+              require(1),
+              require(2),
               require(3)
             ]
           };
           },function (global, require, module, exports) {
-          // const-let.js
+          // permissions.js
           module.exports = {
-            name: 'const / let',
+            name: 'Permissions',
+            url: 'https://www.w3.org/TR/permissions/#enumdef-permissionname',
             test: function (done, caveats) {
               try {
-                Function('done', 'let a = 1; const b = 2; done(a === 1 && b === 2)')(done);
+                if (navigator.permissions) {
+                  done(true);
+                  if (!navigator.permissions.request)
+                    caveats.push('no .request(...)');
+                } else {
+                  throw new Error;
+                }
               } catch(o_O) {
                 done(false);
               }
             }
           };
           },function (global, require, module, exports) {
-          // classes.js
+          // persistent-storage.js
           module.exports = {
-            name: 'Classes',
+            name: 'Persistent Storage',
+            url: 'https://storage.spec.whatwg.org/#persistence',
             test: function (done, caveats) {
               try {
-                eval('class List extends Array {}\ndone(new List instanceof Array)');
+                done(!!navigator.storage.persist);
               } catch(o_O) {
                 done(false);
               }
             }
           };
           },function (global, require, module, exports) {
-          // literals.js
+          // service-worker.js
           module.exports = {
-            name: 'Template Literals',
+            name: 'Service Worker',
+            url: 'https://www.w3.org/TR/service-workers/',
             test: function (done, caveats) {
               try {
-                function tag(tpl) { return tpl; };
-                var same = eval('tag`1${2}3` === tag`1${0}3`');
-                if (!same) caveats.push('not same template array');
-                done(true);
+                done('serviceWorker' in navigator);
               } catch(o_O) {
                 done(false);
               }
@@ -258,7 +544,7 @@
           },function (global, require, module, exports) {
           // template.js
           module.exports = {
-            name: 'HTML Template Elements',
+            name: 'Template Element',
             test: function (done, caveats) {
               try {
                 var tpl = document.createElement('template');
@@ -320,12 +606,14 @@
                 (test.result ? ' checked="checked"' : '') +
                 '"/> ' +
                 (test.url ? ('<a target="_blank" href="' + test.url + '">' + test.name + '</a>') : test.name) +
-                (test.caveats.length ? (' <span>( ' + [].concat(test.caveats).join('; ') + ' )</span> ') : '') +
+                (test.caveats.length ? (' <span>( ' + [].concat(test.caveats).join(', ') + ' )</span> ') : '') +
               '</label>';
             }
             fieldset += '</fieldset>';
             output[i] = fieldset;
           }
+          document.getElementsByTagName('h1')[0].innerHTML +=
+            ' ' + getScoremoji(info.passed / info.total);
           document.body.appendChild(
             document.createElement('main')
           ).innerHTML = ''.concat(
@@ -333,7 +621,7 @@
               info.passed,
             '</strong> out of <strong>',
               info.total,
-            '</strong> ', getScoremoji(info.passed / info.total), '</h2>',
+            '</strong></h2>',
             '<form method="get">',
               output.join('\n'),
             '<input type="submit"/></form>'
@@ -386,8 +674,9 @@
         location.protocol = 'https:';
       }
     </script>
+    <script type="module">window.ESM = true;</script>
   </head>
   <body>
-    <h1>Browser Features</h1>
+    <h1>Modern Browser Features</h1>
   </body>
 </html>

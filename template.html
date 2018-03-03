@@ -92,12 +92,14 @@
                 (test.result ? ' checked="checked"' : '') +
                 '"/> ' +
                 (test.url ? ('<a target="_blank" href="' + test.url + '">' + test.name + '</a>') : test.name) +
-                (test.caveats.length ? (' <span>( ' + [].concat(test.caveats).join('; ') + ' )</span> ') : '') +
+                (test.caveats.length ? (' <span>( ' + [].concat(test.caveats).join(', ') + ' )</span> ') : '') +
               '</label>';
             }
             fieldset += '</fieldset>';
             output[i] = fieldset;
           }
+          document.getElementsByTagName('h1')[0].innerHTML +=
+            ' ' + getScoremoji(info.passed / info.total);
           document.body.appendChild(
             document.createElement('main')
           ).innerHTML = ''.concat(
@@ -105,7 +107,7 @@
               info.passed,
             '</strong> out of <strong>',
               info.total,
-            '</strong> ', getScoremoji(info.passed / info.total), '</h2>',
+            '</strong></h2>',
             '<form method="get">',
               output.join('\n'),
             '<input type="submit"/></form>'
@@ -158,8 +160,9 @@
         location.protocol = 'https:';
       }
     </script>
+    <script type="module">window.ESM = true;</script>
   </head>
   <body>
-    <h1>Browser Features</h1>
+    <h1>Modern Browser Features</h1>
   </body>
 </html>
