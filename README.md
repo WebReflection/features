@@ -1,5 +1,3 @@
-# Browser Features
-
 ## [webreflection.github.io/features](https://webreflection.github.io/features/)
 
 ### What
